@@ -16,6 +16,8 @@ public class Config {
     public static ForgeConfigSpec.DoubleValue xEntry;
     public static ForgeConfigSpec.DoubleValue yEntry;
     public static ForgeConfigSpec.DoubleValue zEntry;
+    public static ForgeConfigSpec.DoubleValue yawEntry;
+    public static ForgeConfigSpec.DoubleValue pitchEntry;
 
     public static ForgeConfigSpec config;
 
@@ -45,6 +47,8 @@ public class Config {
         xEntry = builder.defineInRange("x", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
         yEntry = builder.defineInRange("y", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
         zEntry = builder.defineInRange("z", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
+        yawEntry = builder.defineInRange("yaw", 0.0, -180.0, 180.0);
+        pitchEntry = builder.defineInRange("pitch", 0.0, -90.0, 90.0);
 
         builder.pop();
     }

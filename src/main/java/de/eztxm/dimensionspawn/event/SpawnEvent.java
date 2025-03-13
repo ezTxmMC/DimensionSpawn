@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -64,7 +65,9 @@ public class SpawnEvent {
                         double x = Config.xEntry.get();
                         double y = Config.yEntry.get();
                         double z = Config.zEntry.get();
-                        entity.teleportTo(x, y, z);
+                        float cYaw = Config.yawEntry.get().floatValue();
+                        float cPitch = Config.pitchEntry.get().floatValue();
+                        entity.teleportTo(destWorld, x, y, z, Collections.emptySet(), cYaw, cPitch);
                     }
                     return entity;
                 }
@@ -79,7 +82,9 @@ public class SpawnEvent {
             double x = Config.xEntry.get();
             double y = Config.yEntry.get();
             double z = Config.zEntry.get();
-            player.teleportTo(x, y, z);
+            float cYaw = Config.yawEntry.get().floatValue();
+            float cPitch = Config.pitchEntry.get().floatValue();
+            player.teleportTo((ServerLevel) player.level(), x, y, z, Collections.emptySet(), cYaw, cPitch);
         }
     }
 }
