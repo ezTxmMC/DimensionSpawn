@@ -2,25 +2,14 @@ package de.eztxm.dimensionspawn.event;
 
 import de.eztxm.dimensionspawn.DimensionSpawn;
 import de.eztxm.dimensionspawn.config.Config;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.ITeleporter;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = EventBusSubscriber.Bus.FORGE)
 public class SpawnEvent {
 
     @SubscribeEvent

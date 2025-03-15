@@ -1,33 +1,33 @@
 package de.eztxm.dimensionspawn.config;
 
 import de.eztxm.dimensionspawn.DimensionSpawn;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Forge's config APIs
-@Mod.EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
 
-    public static ForgeConfigSpec.BooleanValue useDimensionEntry;
-    public static ForgeConfigSpec.ConfigValue<String> dimensionEntry;
+    public static ModConfigSpec.BooleanValue useDimensionEntry;
+    public static ModConfigSpec.ConfigValue<String> dimensionEntry;
 
-    public static ForgeConfigSpec.BooleanValue useCoordinatesEntry;
-    public static ForgeConfigSpec.DoubleValue xEntry;
-    public static ForgeConfigSpec.DoubleValue yEntry;
-    public static ForgeConfigSpec.DoubleValue zEntry;
-    public static ForgeConfigSpec.DoubleValue yawEntry;
-    public static ForgeConfigSpec.DoubleValue pitchEntry;
+    public static ModConfigSpec.BooleanValue useCoordinatesEntry;
+    public static ModConfigSpec.DoubleValue xEntry;
+    public static ModConfigSpec.DoubleValue yEntry;
+    public static ModConfigSpec.DoubleValue zEntry;
+    public static ModConfigSpec.DoubleValue yawEntry;
+    public static ModConfigSpec.DoubleValue pitchEntry;
 
-    public static ForgeConfigSpec config;
+    public static ModConfigSpec config;
 
     static {
-        ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder configBuilder = new ModConfigSpec.Builder();
         setupConfig(configBuilder);
         config = configBuilder.build();
     }
 
-    private static void setupConfig(ForgeConfigSpec.Builder builder) {
+    private static void setupConfig(ModConfigSpec.Builder builder) {
         builder.comment(" Welcome to the DimensionSpawn config.\n Here you can set the dimension and the coordinates for player spawning and respawning.");
 
         builder.push("Dimension");
