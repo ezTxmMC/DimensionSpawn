@@ -4,10 +4,10 @@ import de.eztxm.dimensionspawn.DimensionSpawn;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Forge's config APIs
 @Mod.EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
+    public static ForgeConfigSpec.BooleanValue safeSpawn;
+    public static ForgeConfigSpec.IntValue safeSpawnRange;
 
     public static ForgeConfigSpec.BooleanValue useDimensionEntry;
     public static ForgeConfigSpec.ConfigValue<String> dimensionEntry;
@@ -30,6 +30,15 @@ public class Config {
     private static void setupConfig(ForgeConfigSpec.Builder builder) {
         builder.comment(" Welcome to the DimensionSpawn config.\n Here you can set the dimension and the coordinates for player spawning and respawning.");
 
+        builder.push("General");
+        safeSpawn = builder
+                .comment("Here you can enable and disable the usage of a safe spawnpoint.")
+                .define("safeSpawn", false);
+        safeSpawnRange = builder
+                .comment("Here you set the range of the safe spawn search.")
+                .defineInRange("safeSpawnRange", 100, 0, 10000);
+
+        builder.pop();
         builder.push("Dimension");
         useDimensionEntry = builder
                 .comment("Here you can enable and disable the usage of a dimension.")
