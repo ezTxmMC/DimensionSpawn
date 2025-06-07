@@ -1,6 +1,5 @@
 package de.eztxm.dimensionspawn.event;
 
-import de.eztxm.dimensionspawn.DimensionSpawn;
 import de.eztxm.dimensionspawn.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,17 +14,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Collections;
 import java.util.Objects;
 
-@EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class SpawnEvent {
 
     @SubscribeEvent
-    public static void onPlayerFirstJoin(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerFirstJoin(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         int statCounter = player.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME));
         if (statCounter == 0) {
@@ -34,14 +31,14 @@ public class SpawnEvent {
     }
 
     @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         if (!event.isEndConquered() && player.getRespawnPosition() == null) {
             handleTeleport(player);
         }
     }
 
-    private static void handleTeleport(Player player) {
+    private void handleTeleport(Player player) {
         boolean useDimension = Config.useDimensionEntry.get();
         boolean useCoordinates = Config.useCoordinatesEntry.get();
         if (useDimension) {
@@ -70,7 +67,7 @@ public class SpawnEvent {
         }
     }
 
-    private static DimensionTransition dimensionTransition(Entity entity, ServerLevel destWorld) {
+    private DimensionTransition dimensionTransition(Entity entity, ServerLevel destWorld) {
         boolean useCoordinates = Config.useCoordinatesEntry.get();
         boolean safeSpawn = Config.safeSpawn.get();
         int safeSpawnRange = Config.safeSpawnRange.get();
@@ -94,7 +91,7 @@ public class SpawnEvent {
         return null;
     }
 
-    private static BlockPos validPlayerSpawnLocation(ServerLevel world, BlockPos position, int maximumRange) {
+    private BlockPos validPlayerSpawnLocation(ServerLevel world, BlockPos position, int maximumRange) {
         BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();
         for (int range = 0; range < maximumRange; range++) {
             int radiusSq = range * range;
