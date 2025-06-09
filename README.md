@@ -1,6 +1,6 @@
 # DimensionSpawn
 
-**Minecraft Version:** 1.21.1  
+**Minecraft Version:** 1.21.3  
 **Mod Loader:** NeoForge
 
 ## Overview
