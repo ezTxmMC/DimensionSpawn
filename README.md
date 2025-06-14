@@ -1,8 +1,5 @@
 # DimensionSpawn
 
-**Minecraft Version:** 1.20.1  
-**Mod Loader:** Forge
-
 ## Overview
 DimensionSpawn is a lightweight Minecraft mod designed to teleport players to custom coordinates in a specified dimension upon their initial spawn and respawn. Ideal for modded servers, adventure maps, and custom survival worlds!
 
@@ -40,7 +37,9 @@ DimensionSpawn is a lightweight Minecraft mod designed to teleport players to cu
 ```
 
 ## Compatibility
-- Compatible with Forge 1.20.1.
+- Compatible with Forge 1.20.1, NeoForge 1.21.1.
+- NeoForge 1.21.3, 1.21.4 and 1.21.5 are work in progress.
+- Fabric will added later.
 - Plays nicely with most dimension and teleportation mods.
 
 ## Support
