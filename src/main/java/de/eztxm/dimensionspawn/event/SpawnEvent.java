@@ -1,5 +1,8 @@
 package de.eztxm.dimensionspawn.event;
 
+import java.util.Collections;
+import java.util.Objects;
+
 import de.eztxm.dimensionspawn.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -9,15 +12,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-
-import java.util.Collections;
-import java.util.Objects;
-
-import net.minecraft.world.entity.Relative;
 
 public class SpawnEvent {
 
@@ -33,7 +32,8 @@ public class SpawnEvent {
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
-        if (!event.isEndConquered() && player.getRespawnPosition() == null) {
+        // If the player does not have a set respawn point (e.g., bed/anchor), teleport them
+        if (!event.isEndConquered() && event.getRespawnPoint == null) {
             handleTeleport(player);
         }
     }
@@ -98,6 +98,7 @@ public class SpawnEvent {
         player.teleportTo(destWorld, x, y, z, Collections.<Relative>emptySet(), cYaw, cPitch, false);
         return true;
     }
+
     private BlockPos validPlayerSpawnLocation(ServerLevel world, BlockPos position, int maximumRange) {
         BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();
         for (int range = 0; range < maximumRange; range++) {
@@ -109,9 +110,9 @@ public class SpawnEvent {
                         int distanceSq = xOffset * xOffset + yOffset * yOffset + zOffset * zOffset;
                         if (distanceSq >= radiusSq && distanceSq < outerRadiusSq) {
                             currentPos.set(position.getX() + xOffset, position.getY() + yOffset, position.getZ() + zOffset);
-                            if (world.getBlockState(currentPos.below()).canOcclude() &&
-                                    world.getBlockState(currentPos).isAir() &&
-                                    world.getBlockState(currentPos.above()).isAir()) {
+                            if (world.getBlockState(currentPos.below()).canOcclude()
+                                    && world.getBlockState(currentPos).isAir()
+                                    && world.getBlockState(currentPos.above()).isAir()) {
                                 return currentPos;
                             }
                         }
