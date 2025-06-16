@@ -9,15 +9,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Collections;
 import java.util.Objects;
+
+import net.minecraft.world.entity.Relative;
 
 public class SpawnEvent {
 
@@ -47,14 +47,13 @@ public class SpawnEvent {
             Level level = player.level();
             ServerLevel dimension = Objects.requireNonNull(level.getServer()).getLevel(dimensionKey);
             if (dimension == null) {
-                player.sendSystemMessage(Component.literal("[DimensionSpawn] The dimension " + dimensionKey + " does not exist in this instance."));
+                ((ServerPlayer) player).sendSystemMessage(Component.literal("[DimensionSpawn] The dimension " + dimensionKey + " does not exist in this instance."));
                 return;
             }
-            DimensionTransition transition = dimensionTransition(player, dimension);
-            if (transition == null) {
-                return;
+            boolean teleported = teleportToDimension((ServerPlayer) player, dimension);
+            if (!teleported) {
+                ((ServerPlayer) player).sendSystemMessage(Component.literal("[DimensionSpawn] Failed to teleport to the dimension."));
             }
-            player.changeDimension(transition);
             return;
         }
         if (useCoordinates) {
@@ -63,34 +62,42 @@ public class SpawnEvent {
             double z = Config.zEntry.get();
             float cYaw = Config.yawEntry.get().floatValue();
             float cPitch = Config.pitchEntry.get().floatValue();
-            player.teleportTo((ServerLevel) player.level(), x, y, z, Collections.emptySet(), cYaw, cPitch);
+            player.teleportTo((ServerLevel) player.level(), x, y, z, Collections.emptySet(), cYaw, cPitch, false);
         }
     }
 
-    private DimensionTransition dimensionTransition(Entity entity, ServerLevel destWorld) {
+    private boolean teleportToDimension(ServerPlayer player, ServerLevel destWorld) {
         boolean useCoordinates = Config.useCoordinatesEntry.get();
         boolean safeSpawn = Config.safeSpawn.get();
         int safeSpawnRange = Config.safeSpawnRange.get();
-        if (useCoordinates) {
-            double x = Config.xEntry.get();
-            double y = Config.yEntry.get();
-            double z = Config.zEntry.get();
-            float cYaw = Config.yawEntry.get().floatValue();
-            float cPitch = Config.pitchEntry.get().floatValue();
-            if (safeSpawn) {
-                BlockPos blockPos = new BlockPos((int) x, (int) y, (int) z);
-                BlockPos safeBlockPos = validPlayerSpawnLocation(destWorld, blockPos, safeSpawnRange);
-                if (safeBlockPos == null) {
-                    return new DimensionTransition(destWorld, entity, entity1 -> entity1.teleportTo(destWorld, x, y, z, Collections.emptySet(), cYaw, cPitch));
-                }
-                entity.teleportTo(destWorld, safeBlockPos.getX(), safeBlockPos.getY(), safeBlockPos.getZ(), Collections.emptySet(), cYaw, cPitch);
-                return new DimensionTransition(destWorld, entity, entity1 -> entity1.teleportTo(destWorld, safeBlockPos.getX(), safeBlockPos.getY(), safeBlockPos.getZ(), Collections.emptySet(), cYaw, cPitch));
-            }
-            return new DimensionTransition(destWorld, entity, entity1 -> entity1.teleportTo(destWorld, x, y, z, Collections.emptySet(), cYaw, cPitch));
-        }
-        return null;
-    }
+        double x = player.getX();
+        double y = player.getY();
+        double z = player.getZ();
+        float cYaw = player.getYRot();
+        float cPitch = player.getXRot();
 
+        if (useCoordinates) {
+            x = Config.xEntry.get();
+            y = Config.yEntry.get();
+            z = Config.zEntry.get();
+            cYaw = Config.yawEntry.get().floatValue();
+            cPitch = Config.pitchEntry.get().floatValue();
+        }
+
+        if (safeSpawn) {
+            BlockPos blockPos = new BlockPos((int) x, (int) y, (int) z);
+            BlockPos safeBlockPos = validPlayerSpawnLocation(destWorld, blockPos, safeSpawnRange);
+            if (safeBlockPos != null) {
+                x = safeBlockPos.getX();
+                y = safeBlockPos.getY();
+                z = safeBlockPos.getZ();
+            }
+        }
+
+        // Teleport the player to the destination world and coordinates
+        player.teleportTo(destWorld, x, y, z, Collections.<Relative>emptySet(), cYaw, cPitch, false);
+        return true;
+    }
     private BlockPos validPlayerSpawnLocation(ServerLevel world, BlockPos position, int maximumRange) {
         BlockPos.MutableBlockPos currentPos = new BlockPos.MutableBlockPos();
         for (int range = 0; range < maximumRange; range++) {
