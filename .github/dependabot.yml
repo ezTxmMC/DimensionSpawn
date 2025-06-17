@@ -30,3 +30,8 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "1.21.5/neoforge"
+  - package-ecosystem: "gradle" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    target-branch: "1.21.6/neoforge"
