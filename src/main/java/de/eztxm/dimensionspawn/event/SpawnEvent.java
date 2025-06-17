@@ -32,8 +32,7 @@ public class SpawnEvent {
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
-        // If the player does not have a set respawn point (e.g., bed/anchor), teleport them
-        if (!event.isEndConquered() && event.getRespawnPoint == null) {
+        if (!event.isEndConquered() && player.getRespawnConfig() == null) {
             handleTeleport(player);
         }
     }
@@ -93,8 +92,6 @@ public class SpawnEvent {
                 z = safeBlockPos.getZ();
             }
         }
-
-        // Teleport the player to the destination world and coordinates
         player.teleportTo(destWorld, x, y, z, Collections.<Relative>emptySet(), cYaw, cPitch, false);
         return true;
     }
