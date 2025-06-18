@@ -1,64 +1,76 @@
 package de.eztxm.dimensionspawn.config;
 
-import de.eztxm.dimensionspawn.DimensionSpawn;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.fabricmc.loader.api.FabricLoader;
+import java.nio.file.Path;
+import java.util.Properties;
+import java.io.*;
 
-@Mod.EventBusSubscriber(modid = DimensionSpawn.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
-    public static ForgeConfigSpec.BooleanValue safeSpawn;
-    public static ForgeConfigSpec.IntValue safeSpawnRange;
+    private static final String CONFIG_FILE = "dimensionspawn.properties";
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILE);
 
-    public static ForgeConfigSpec.BooleanValue useDimensionEntry;
-    public static ForgeConfigSpec.ConfigValue<String> dimensionEntry;
+    public boolean safeSpawn = false;
+    public int safeSpawnRange = 100;
 
-    public static ForgeConfigSpec.BooleanValue useCoordinatesEntry;
-    public static ForgeConfigSpec.DoubleValue xEntry;
-    public static ForgeConfigSpec.DoubleValue yEntry;
-    public static ForgeConfigSpec.DoubleValue zEntry;
-    public static ForgeConfigSpec.DoubleValue yawEntry;
-    public static ForgeConfigSpec.DoubleValue pitchEntry;
+    public boolean useDimensionEntry = false;
+    public String dimensionEntry = "minecraft:overworld";
 
-    public static ForgeConfigSpec config;
+    public boolean useCoordinatesEntry = false;
+    public double xEntry = 0D;
+    public double yEntry = 0D;
+    public double zEntry = 0D;
+    public float yawEntry = 0.0F;
+    public float pitchEntry = 0.0F;
 
-    static {
-        ForgeConfigSpec.Builder configBuilder = new ForgeConfigSpec.Builder();
-        setupConfig(configBuilder);
-        config = configBuilder.build();
+    private static Config INSTANCE;
+
+    public static Config get() {
+        if (INSTANCE == null) {
+            INSTANCE = new Config();
+            INSTANCE.load();
+        }
+        return INSTANCE;
     }
 
-    private static void setupConfig(ForgeConfigSpec.Builder builder) {
-        builder.comment(" Welcome to the DimensionSpawn config.\n Here you can set the dimension and the coordinates for player spawning and respawning.");
+    public void load() {
+        Properties props = new Properties();
+        if (CONFIG_PATH.toFile().exists()) {
+            try (FileInputStream in = new FileInputStream(CONFIG_PATH.toFile())) {
+                props.load(in);
+                safeSpawn = Boolean.parseBoolean(props.getProperty("safeSpawn", "false"));
+                safeSpawnRange = Integer.parseInt(props.getProperty("safeSpawnRange", "100"));
+                useDimensionEntry = Boolean.parseBoolean(props.getProperty("useDimensionEntry", "false"));
+                dimensionEntry = props.getProperty("dimensionEntry", "minecraft:overworld");
+                useCoordinatesEntry = Boolean.parseBoolean(props.getProperty("useCoordinatesEntry", "false"));
+                xEntry = Double.parseDouble(props.getProperty("xEntry", "0.0"));
+                yEntry = Double.parseDouble(props.getProperty("yEntry", "0.0"));
+                zEntry = Double.parseDouble(props.getProperty("zEntry", "0.0"));
+                yawEntry = Float.parseFloat(props.getProperty("yawEntry", "0.0"));
+                pitchEntry = Float.parseFloat(props.getProperty("pitchEntry", "0.0"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            save(); // Erstellt Standarddatei, falls nicht vorhanden
+        }
+    }
 
-        builder.push("General");
-        safeSpawn = builder
-                .comment("Here you can enable and disable the usage of a safe spawnpoint.")
-                .define("safeSpawn", false);
-        safeSpawnRange = builder
-                .comment("Here you set the range of the safe spawn search.")
-                .defineInRange("safeSpawnRange", 100, 0, 10000);
-
-        builder.pop();
-        builder.push("Dimension");
-        useDimensionEntry = builder
-                .comment("Here you can enable and disable the usage of a dimension.")
-                .define("useDimension", false);
-        dimensionEntry = builder
-                .comment(" There you can define a default dimension to spawn. Syntax: modid:world_id. You can use '/execute in' tab-completion to find a list of available dimensions.")
-                .define("dimension", "minecraft:overworld");
-
-        builder.pop();
-        builder.push("Coordinates");
-        useCoordinatesEntry = builder
-                .comment("Here you can enable and disable the usage of a coordinates.")
-                .define("useCoordinates", false);
-
-        xEntry = builder.defineInRange("x", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
-        yEntry = builder.defineInRange("y", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
-        zEntry = builder.defineInRange("z", 0D, -Double.MAX_VALUE, Double.MAX_VALUE);
-        yawEntry = builder.defineInRange("yaw", 0.0, -180.0, 180.0);
-        pitchEntry = builder.defineInRange("pitch", 0.0, -90.0, 90.0);
-
-        builder.pop();
+    public void save() {
+        Properties props = new Properties();
+        props.setProperty("safeSpawn", Boolean.toString(safeSpawn));
+        props.setProperty("safeSpawnRange", Integer.toString(safeSpawnRange));
+        props.setProperty("useDimensionEntry", Boolean.toString(useDimensionEntry));
+        props.setProperty("dimensionEntry", dimensionEntry);
+        props.setProperty("useCoordinatesEntry", Boolean.toString(useCoordinatesEntry));
+        props.setProperty("xEntry", Double.toString(xEntry));
+        props.setProperty("yEntry", Double.toString(yEntry));
+        props.setProperty("zEntry", Double.toString(zEntry));
+        props.setProperty("yawEntry", Double.toString(yawEntry));
+        props.setProperty("pitchEntry", Double.toString(pitchEntry));
+        try (FileOutputStream out = new FileOutputStream(CONFIG_PATH.toFile())) {
+            props.store(out, "DimensionSpawn Config");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

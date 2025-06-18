@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "dimensionspawn",
+  "version": "${version}",
+  "name": "DimensionSpawn",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/dimensionspawn/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "de.eztxm.dimensionspawn.DimensionSpawn"
+    ]
+  },
+  "mixins": [
+    "dimensionspawn.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

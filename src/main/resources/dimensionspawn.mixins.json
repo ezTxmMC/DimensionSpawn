@@ -2,9 +2,9 @@
   "required": true,
   "minVersion": "0.8",
   "package": "de.eztxm.dimensionspawn.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "refmap": "dimensionspawn.refmap.json",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "PlayerEventMixin"
   ],
   "client": [
   ],
