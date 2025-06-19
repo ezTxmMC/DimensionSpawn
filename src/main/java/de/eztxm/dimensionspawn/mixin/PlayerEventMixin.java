@@ -1,7 +1,9 @@
 package de.eztxm.dimensionspawn.mixin;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -26,11 +28,11 @@ import java.util.Objects;
 public class PlayerEventMixin {
 
     @Inject(at = @At(value = "TAIL"), method = "onPlayerConnect")
-    private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+    private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
         if (player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.LEAVE_GAME)) < 1) {
             if (Config.get().useDimensionEntry) {
                 String[] dimensionSplit = Config.get().dimensionEntry.split(":");
-                RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(dimensionSplit[0], dimensionSplit[1]));
+                RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimensionSplit[0], dimensionSplit[1]));
                 World world = player.getWorld();
                 ServerWorld dimension = Objects.requireNonNull(world.getServer()).getWorld(dimensionKey);
                 if (dimension == null) {
@@ -67,15 +69,15 @@ public class PlayerEventMixin {
     }
 
     @Inject(at = @At(value = "HEAD"), method = "respawnPlayer")
-    private void respawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> cir) {
-        if (Objects.equals(player.getServerWorld().getRegistryKey().getRegistry(), new Identifier("minecraft", "the_end"))) {
+    private void respawnPlayer(ServerPlayerEntity player, boolean alive, Entity.RemovalReason removalReason, CallbackInfoReturnable<ServerPlayerEntity> cir) {
+        if (Objects.equals(player.getServerWorld().getRegistryKey().getRegistry(), Identifier.of("minecraft", "the_end"))) {
             ServerWorld overworld = Objects.requireNonNull(player.getServer()).getOverworld();
             player.setSpawnPoint(overworld.getRegistryKey(), overworld.getSpawnPos(), 0, true, false);
             return;
         }
         if (Config.get().useDimensionEntry) {
             String[] dimensionSplit = Config.get().dimensionEntry.split(":");
-            RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(dimensionSplit[0], dimensionSplit[1]));
+            RegistryKey<World> dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimensionSplit[0], dimensionSplit[1]));
             if (Config.get().useCoordinatesEntry) {
                 BlockPos blockPos = new BlockPos((int) Config.get().xEntry, (int) Config.get().yEntry, (int) Config.get().zEntry);
                 if (Config.get().safeSpawn) {
