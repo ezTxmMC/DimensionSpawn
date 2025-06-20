@@ -120,3 +120,4 @@ runs/
 
 # Visual Studio Code
 .vscode/
+bin/
