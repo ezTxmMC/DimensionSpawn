@@ -2,21 +2,62 @@ pipeline {
     agent any
     
     stages {
-        stage('Checkout') {
+        stage('Detect Platform') {
             steps {
-                checkout scm
+                script {
+                    def branchName = env.BRANCH_NAME
+                    if (branchName.contains('fabric')) {
+                        env.PLATFORM = 'fabric'
+                    } else if (branchName.contains('neoforge')) {
+                        env.PLATFORM = 'neoforge'
+                    } else if (branchName.contains('forge')) {
+                        env.PLATFORM = 'forge'
+                    }
+                    echo "Building for platform: ${env.PLATFORM}"
+                    echo "Minecraft version: ${branchName.split('/')[0]}"
+                }
             }
         }
-        stage('Gradle Build') {
+        
+        stage('Build') {
             steps {
                 script {
                     if (isUnix()) {
-                        sh './gradlew clean build'
+                        sh './gradlew clean build --no-daemon'
                     } else {
-                        bat 'gradlew.bat clean build'
+                        bat 'gradlew.bat clean build --no-daemon'
                     }
                 }
             }
+        }
+        
+        stage('Test') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh './gradlew test --no-daemon'
+                    } else {
+                        bat 'gradlew.bat test --no-daemon'
+                    }
+                }
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/test/*.xml'
+                }
+            }
+        }
+        
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
         }
     }
 }
