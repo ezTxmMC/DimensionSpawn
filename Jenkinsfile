@@ -26,6 +26,7 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
+                        sh 'chmod +x gradlew'
                         sh './gradlew clean build --no-daemon'
                     } else {
                         bat 'gradlew.bat clean build --no-daemon'
