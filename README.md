@@ -49,9 +49,8 @@ DimensionSpawn is a lightweight Minecraft mod designed to teleport players to cu
 ```
 
 ## Compatibility
-- Compatible with Forge 1.20.1, NeoForge 1.21.1, 1.21.3, 1.21.4 & 1.21.5.
-- NeoForge 1.21.6 and Fabric support is work in progress.
 - Plays nicely with most dimension and teleportation mods.
+- May potentially cause players to get stuck in the dimensions
 
 ## Support
 For issues, feature requests, or assistance, please visit our GitHub repository or leave a comment below.
