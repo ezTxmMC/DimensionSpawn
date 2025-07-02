@@ -1,24 +1,27 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Detect Platform') {
             steps {
                 script {
-                    def branchName = env.BRANCH_NAME
+                    def branchName = env.BRANCH_NAME ?: 'unknown/unknown'
                     if (branchName.contains('fabric')) {
                         env.PLATFORM = 'fabric'
                     } else if (branchName.contains('neoforge')) {
                         env.PLATFORM = 'neoforge'
                     } else if (branchName.contains('forge')) {
                         env.PLATFORM = 'forge'
+                    } else {
+                        env.PLATFORM = 'unknown'
                     }
+                    def mcVersion = branchName.split('/')[0]
                     echo "Building for platform: ${env.PLATFORM}"
-                    echo "Minecraft version: ${branchName.split('/')[0]}"
+                    echo "Minecraft version: ${mcVersion}"
                 }
             }
         }
-        
+
         stage('Build') {
             steps {
                 script {
@@ -30,7 +33,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             steps {
                 script {
@@ -47,14 +50,14 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
