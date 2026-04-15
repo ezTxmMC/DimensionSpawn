@@ -1,4 +1,4 @@
-# DimensionSpawn
+# DimensionSpawn - V2 RECODE PLANNED AS SOON AS I HAVE TIME
 
 ## Overview
 DimensionSpawn is a lightweight Minecraft mod designed to teleport players to custom coordinates in a specified dimension upon their initial spawn and respawn. Ideal for modded servers, adventure maps, and custom survival worlds!
